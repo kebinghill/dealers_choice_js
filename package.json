@@ -3,7 +3,8 @@
     "express": "^4.17.1",
     "morgan": "^1.10.0",
     "node": "^15.7.0",
-    "pg": "^8.5.1"
+    "pg": "^8.5.1",
+    "sequelize": "^6.5.0"
   },
   "name": "dealers_choice_js",
   "version": "1.0.0",
@@ -13,7 +14,8 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start:dev": "nodemon app"
+    "start:dev": "nodemon app",
+    "seed": "node seed.js"
   },
   "author": "",
   "license": "ISC",

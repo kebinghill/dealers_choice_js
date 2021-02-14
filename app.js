@@ -1,8 +1,9 @@
 const express = require('express');
 const morgan = require('morgan');
-const main = require('./mainPage');
 const path = require('path');
-const { client } = require('./db/server');
+const {
+  models: { Class, Instrument },
+} = require('./db/server');
 
 const app = express();
 
@@ -11,8 +12,6 @@ app.use('/assets', express.static(path.join(__dirname + '/assets')));
 
 app.get('/', async (req, res, next) => {
   try {
-    const instruments = await client.query('SELECT name FROM instruments');
-    const rows = instruments.rows.map((obj) => obj.name);
     res.send(`
       <html>
         <head>
@@ -52,10 +51,11 @@ app.get('/', async (req, res, next) => {
 
 app.get('/drums', async (req, res, next) => {
   try {
-    const instruments = await client.query(
-      'SELECT * FROM instruments WHERE class_id=3'
-    );
-    const rows = instruments.rows;
+    const instruments = await Instrument.findAll({
+      where: {
+        classId: 3,
+      },
+    });
     res.send(`
       <html>
         <head>
@@ -65,7 +65,7 @@ app.get('/drums', async (req, res, next) => {
         <h1>Drums</h1>
           <ul>
             <container>
-            ${rows
+            ${instruments
               .map(
                 (ins) =>
                   `<li><a href='/instruments/${ins.id}'>${ins.name}</a></li>`
@@ -83,10 +83,11 @@ app.get('/drums', async (req, res, next) => {
 
 app.get('/strings', async (req, res, next) => {
   try {
-    const instruments = await client.query(
-      'SELECT * FROM instruments WHERE class_id=1'
-    );
-    const rows = instruments.rows;
+    const instruments = await Instrument.findAll({
+      where: {
+        classId: 1,
+      },
+    });
     res.send(`
       <html>
         <head>
@@ -96,7 +97,7 @@ app.get('/strings', async (req, res, next) => {
         <h1>Strings</h1>
           <ul>
             <container>
-            ${rows
+            ${instruments
               .map(
                 (ins) =>
                   `<li><a href='/instruments/${ins.id}'>${ins.name}</a></li>`
@@ -114,10 +115,11 @@ app.get('/strings', async (req, res, next) => {
 
 app.get('/keys', async (req, res, next) => {
   try {
-    const instruments = await client.query(
-      'SELECT * FROM instruments WHERE class_id=2'
-    );
-    const rows = instruments.rows;
+    const instruments = await Instrument.findAll({
+      where: {
+        classId: 2,
+      },
+    });
     res.send(`
       <html>
         <head>
@@ -127,7 +129,7 @@ app.get('/keys', async (req, res, next) => {
         <h1>Keys</h1>
           <ul>
             <container>
-            ${rows
+            ${instruments
               .map(
                 (ins) =>
                   `<li><a href='/instruments/${ins.id}'>${ins.name}</a></li>`
@@ -145,10 +147,7 @@ app.get('/keys', async (req, res, next) => {
 
 app.get('/instruments/:id', async (req, res, next) => {
   try {
-    let response = await client.query('SELECT * FROM instruments WHERE id=$1', [
-      req.params.id,
-    ]);
-    const instrument = response.rows[0];
+    const instrument = await Instrument.findByPk(req.params.id);
     res.send(`
       <html>
         <head>
